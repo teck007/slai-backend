@@ -6,3 +6,4 @@ openai==1.78.1
 python-dotenv
 PyMySQL
 cryptography
+gunicorn
