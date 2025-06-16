@@ -1,10 +1,10 @@
-import MySQLdb
+import pymysql
 from dotenv import load_dotenv
 import os
 # Carga las variables del archivo .env
 load_dotenv()
 
-conn = MySQLdb.connect(
+conn = pymysql.connect(
     user = os.getenv("DB_USER"),
     password = os.getenv("DB_PASSWORD"),
     host = os.getenv("DB_HOST"),
@@ -20,7 +20,7 @@ def save_url(original_url, short_url):
             VALUES (%s, %s)
         """, (original_url, short_url))
         conn.commit()
-    except MySQLdb.Error as e:
+    except pymysql.MySQLError as e:
         print(f"Error inserting into database: {e}")
     finally:
         cur.close()
@@ -33,7 +33,7 @@ def get_url(short_url):
         """, (short_url,))
         row = cur.fetchone()
         return row[0] if row else None
-    except MySQLdb.Error as e:
+    except pymysql.MySQLError as e:
         print(f"Error querying database: {e}")
         return None
     finally:
