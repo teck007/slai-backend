@@ -2,7 +2,7 @@ from flask import Flask, redirect, jsonify, request
 from src.chat_openai import shorten
 from src.url_analize import url_content
 from flask_cors import CORS
-from src.database import save_url, get_url
+from src.database import save_url, get_url, find_url
 
 app = Flask(__name__)
 CORS(app)
@@ -11,11 +11,13 @@ CORS(app)
 def short():
     data = request.get_json()
     url = data['url']
-    # description = data['description']
     content = url_content(url)
+    exists = find_url(url)
+    if (exists):
+        return jsonify({'status': 'exists','result': exists})
     short_url = shorten(url,content)
     save_url(url, short_url)
-    return jsonify({'result': short_url})
+    return jsonify({'status': 'shorted','result': short_url})
 
 @app.route('/<short_url>', methods=['GET'])
 def redirect_short(short_url):
