@@ -23,7 +23,7 @@ def shorten(url: str, content: str) -> str:
         f"Tengo esta URL: {url} y este contenido extraído de la URL: {content}. "
         "Quiero que resumas el contenido. Con este resumen genera un nombre corto de hasta 12 caracteres, solo en minúsculas."
         "Para el resumen no incluyas palabras relacionadas con partes del HTML como meta tags, meta description, meta keywords, etc. "
-        "Si es necesario utiliza alguna palabra clave de la URL. Me debes responder con solo una opcion de frase, con dos palabras."
+        "Si es necesario utiliza alguna palabra clave de la URL. Me debes responder con solo una opcion de frase, con dos palabras y sin tildes."
     )
     try:
         response = client.chat.completions.create(
