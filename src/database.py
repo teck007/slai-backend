@@ -37,7 +37,9 @@ def get_url(short_url):
             SELECT orig_url FROM urls WHERE short_url = %s
             """, (short_url,))
         row = cur.fetchone()
-        return row[0] if row else None
+        if row:
+            return row[0]
+        return None
     except pymysql.MySQLError as e:
         print(f"Error querying database: {e}")
         return None
@@ -51,7 +53,9 @@ def find_url(url):
         cur.execute("""
                 SELECT short_url FROM urls WHERE orig_url = %s
                 """, (url,))
-        return str(cur.fetchone()[0])
+        if cur.rowcount > 0:
+            return str(cur.fetchone()[0])
+        return None
     except pymysql.MySQLError as e:
         print(f"Error querying database: {e}")
     finally:
