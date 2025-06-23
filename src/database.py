@@ -1,9 +1,12 @@
+# Importa la librería pymysql para interactuar con MySQL
 import pymysql
+# Importa load_dotenv para cargar variables de entorno desde un archivo .env
 from dotenv import load_dotenv
 import os
-# Carga las variables del archivo .env
+# Carga las variables del archivo .env en el entorno
 load_dotenv()
 
+# Establece la conexión a la base de datos usando las variables de entorno
 conn = pymysql.connect(
     user = os.getenv("DB_USER"),
     password = os.getenv("DB_PASSWORD"),
@@ -12,6 +15,7 @@ conn = pymysql.connect(
     database = os.getenv("DB_NAME")
 )
 
+# Guarda URL original y su versión corta en la base de datos
 def save_url(original_url, short_url):
     cur = conn.cursor()
     try:
@@ -25,6 +29,7 @@ def save_url(original_url, short_url):
     finally:
         cur.close()
 
+# Recupera la URL original a partir de la URL corta
 def get_url(short_url):
     cur = conn.cursor()
     try:
@@ -39,6 +44,7 @@ def get_url(short_url):
     finally:
         cur.close()
 
+# Busca la URL corta correspondiente a una URL original
 def find_url(url):
     cur = conn.cursor()
     try:
