@@ -33,17 +33,16 @@ def token_required(f):
 def short():
     data = request.get_json()  # Obtiene los datos del request
     url = data['url']  # Extrae la URL
-    content = url_content(url)  # Analiza el contenido de la URL
     exists = find_url(url)  # Verifica si la URL ya fue acortada
     if (exists):
         return jsonify({'status': 'exists','result': exists})  # Si existe, retorna la URL acortada existente
+    content = url_content(url)  # Analiza el contenido de la URL
     short_url = shorten(url,content)  # Acorta la URL usando el contenido
     save_url(url, short_url)  # Guarda la nueva URL acortada en la base de datos
     return jsonify({'status': 'shorted','result': short_url})  # Retorna la nueva URL acortada
 
 # Ruta para redirigir desde una URL acortada a la original
 @app.route('/<short_url>', methods=['GET'])
-@token_required
 def redirect_short(short_url):
     original_url = get_url(short_url)  # Busca la URL original
     if original_url:
