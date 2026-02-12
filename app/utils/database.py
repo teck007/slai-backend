@@ -22,7 +22,7 @@ def save_url(original_url, short_url):
         cur.execute("""
             INSERT INTO urls (orig_url, short_url)
             VALUES (%s, %s)
-        """, (original_url, short_url))
+            """, (original_url, short_url))
         conn.commit()
     except pymysql.MySQLError as e:
         print(f"Error inserting into database: {e}")
