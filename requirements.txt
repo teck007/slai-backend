@@ -8,3 +8,5 @@ PyMySQL
 cryptography
 gunicorn
 flask-limiter
+redis>=3.0
+pymemcache
