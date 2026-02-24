@@ -12,7 +12,7 @@ CORS(app)
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"],
+    default_limits=[os.getenv("LIMIT_IP_DAY"), os.getenv("LIMIT_IP_HOUR")],
     storage_uri=os.getenv("REDIS_URI")
 )
 
