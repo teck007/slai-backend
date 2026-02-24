@@ -7,3 +7,4 @@ python-dotenv
 PyMySQL
 cryptography
 gunicorn
+flask-limiter
