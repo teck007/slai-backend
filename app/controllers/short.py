@@ -1,15 +1,14 @@
 # Importar las librerías necesarias
-from app import app
+from app import app, limiter
 from app.utils.database import save_url, get_url, find_url  # Funciones para interactuar con la base de datos
 from app.utils.llm_service import resume_url  # Función para acortar URLs usando IA
 from app.utils.url_analize import url_content  # Función para analizar el contenido de una URL
-from app.utils.auth import token_required
 from flask import request, jsonify, redirect
 from functools import wraps  # Para crear decoradores
 
 # Ruta para acortar una URL
 @app.route('/api/shorten',methods=['POST'])
-@token_required
+@limiter.limit("5 per minute")
 def short():
     data = request.get_json()  # Obtiene los datos del request
     url = data['url']  # Extrae la URL
