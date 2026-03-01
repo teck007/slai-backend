@@ -7,16 +7,18 @@ import os
 load_dotenv()
 
 # Establece la conexión a la base de datos usando las variables de entorno
-conn = pymysql.connect(
-    user = os.getenv("DB_USER"),
-    password = os.getenv("DB_PASSWORD"),
-    host = os.getenv("DB_HOST"),
-    port = int(os.getenv("DB_PORT")),
-    database = os.getenv("DB_NAME")
-)
+def get_connection():
+    return pymysql.connect(
+        user = os.getenv("DB_USER"),
+        password = os.getenv("DB_PASSWORD"),
+        host = os.getenv("DB_HOST"),
+        port = int(os.getenv("DB_PORT")),
+        database = os.getenv("DB_NAME")
+        )
 
 # Guarda URL original y su versión corta en la base de datos
 def save_url(original_url, short_url):
+    conn = get_connection()
     cur = conn.cursor()
     try:
         cur.execute("""
@@ -31,6 +33,7 @@ def save_url(original_url, short_url):
 
 # Recupera la URL original a partir de la URL corta
 def get_url(short_url):
+    conn = get_connection()
     cur = conn.cursor()
     try:
         cur.execute("""
@@ -48,6 +51,7 @@ def get_url(short_url):
 
 # Busca la URL corta correspondiente a una URL original
 def find_url(url):
+    conn = get_connection()
     cur = conn.cursor()
     try:
         cur.execute("""
