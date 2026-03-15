@@ -27,7 +27,7 @@ def short():
 def redirect_short(short_url):
     original_url = get_url(short_url)  # Busca la URL original
     if not original_url:
-        return jsonify({'error': 'URL no encontrada'}), 404  # Retorna error si no existe
+        return "<h1>URL no encontrada</h1>", 404  # Retorna error si no existe
     
     return redirect(original_url)  # Redirige si existe
 
