@@ -1,66 +1,67 @@
-# Importa la librería pymysql para interactuar con MySQL
-import pymysql
-# Importa load_dotenv para cargar variables de entorno desde un archivo .env
+# Cliente Supabase - usa REST API sobre HTTPS (evita bloqueos del puerto 5432)
+from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
-# Carga las variables del archivo .env en el entorno
+
 load_dotenv()
 
-# Establece la conexión a la base de datos usando las variables de entorno
-def get_connection():
-    return pymysql.connect(
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PASSWORD"),
-        host = os.getenv("DB_HOST"),
-        port = int(os.getenv("DB_PORT")),
-        database = os.getenv("DB_NAME")
-        )
+# Nombre de la tabla (DB_NAME es el nombre de la base de datos, no de la tabla)
+TABLE_URLS = os.getenv("TABLE_URLS", "urls")
 
-# Guarda URL original y su versión corta en la base de datos
+# URL derivada del host de Supabase: db.XXX.supabase.co -> https://XXX.supabase.co
+_supabase_url = os.getenv("SUPABASE_URL")
+if not _supabase_url and os.getenv("DB_HOST"):
+    _host = os.getenv("DB_HOST", "").replace("db.", "")
+    if _host:
+        _supabase_url = f"https://{_host}"
+
+_supabase: Client | None = None
+
+
+def _get_client() -> Client:
+    """Obtiene el cliente de Supabase (usa REST/HTTPS, no requiere puerto 5432)."""
+    global _supabase
+    if _supabase is None:
+        key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+        if not key or not _supabase_url:
+            raise ValueError(
+                "Falta SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY (o SUPABASE_ANON_KEY) en .env. "
+                "Obtenlos en Supabase: Project Settings > API"
+            )
+        _supabase = create_client(_supabase_url, key)
+    return _supabase
+
+
 def save_url(original_url, short_url):
-    conn = get_connection()
-    cur = conn.cursor()
+    """Guarda URL original y su versión corta en la base de datos."""
     try:
-        cur.execute("""
-            INSERT INTO urls (orig_url, short_url)
-            VALUES (%s, %s)
-            """, (original_url, short_url))
-        conn.commit()
-    except pymysql.MySQLError as e:
+        _get_client().table(TABLE_URLS).insert({
+            "orig_url": original_url,
+            "short_url": short_url,
+        }).execute()
+    except Exception as e:
         print(f"Error inserting into database: {e}")
-    finally:
-        cur.close()
 
-# Recupera la URL original a partir de la URL corta
+
 def get_url(short_url):
-    conn = get_connection()
-    cur = conn.cursor()
+    """Recupera la URL original a partir de la URL corta."""
     try:
-        cur.execute("""
-            SELECT orig_url FROM urls WHERE short_url = %s
-            """, (short_url,))
-        row = cur.fetchone()
-        if row:
-            return row[0]
+        resp = _get_client().table(TABLE_URLS).select("orig_url").eq("short_url", short_url).limit(1).execute()
+        if resp.data and len(resp.data) > 0:
+            return resp.data[0]["orig_url"]
         return None
-    except pymysql.MySQLError as e:
+    except Exception as e:
         print(f"Error querying database: {e}")
         return None
-    finally:
-        cur.close()
 
-# Busca la URL corta correspondiente a una URL original
+
 def find_url(url):
-    conn = get_connection()
-    cur = conn.cursor()
+    """Busca la URL corta correspondiente a una URL original."""
     try:
-        cur.execute("""
-                SELECT short_url FROM urls WHERE orig_url = %s
-                """, (url,))
-        if cur.rowcount > 0:
-            return str(cur.fetchone()[0])
+        resp = _get_client().table(TABLE_URLS).select("short_url").eq("orig_url", url).limit(1).execute()
+        if resp.data and len(resp.data) > 0:
+            return str(resp.data[0]["short_url"])
         return None
-    except pymysql.MySQLError as e:
+    except Exception as e:
         print(f"Error querying database: {e}")
-    finally:
-        cur.close()
+        return None
