@@ -66,3 +66,14 @@ def find_url(url):
     except Exception as e:
         print(f"Error querying database: {e}")
         return None
+
+def find_user_links(user_id):
+    """Busca las URLs cortas correspondientes a un usuario."""
+    try:
+        resp = _get_client().table(TABLE_URLS).select("short_url, orig_url").eq("user_id", user_id).execute()
+        if resp.data and len(resp.data) > 0:
+            return [{'short_url': str(link["short_url"]), 'orig_url': str(link["orig_url"])} for link in resp.data]
+        return []
+    except Exception as e:
+        print(f"Error querying database: {e}")
+        return []
