@@ -32,12 +32,13 @@ def _get_client() -> Client:
     return _supabase
 
 
-def save_url(original_url, short_url):
+def save_url(original_url, short_url, user_id):
     """Guarda URL original y su versión corta en la base de datos."""
     try:
         _get_client().table(TABLE_URLS).insert({
             "orig_url": original_url,
             "short_url": short_url,
+            "user_id": user_id,
         }).execute()
     except Exception as e:
         print(f"Error inserting into database: {e}")
