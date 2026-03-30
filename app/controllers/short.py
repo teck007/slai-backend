@@ -7,7 +7,7 @@ from flask import request, jsonify, redirect
 from app.utils.auth import optional_auth, g
 # Ruta para acortar una URL
 @app.route('/api/shorten',methods=['POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("10 per minute")
 @optional_auth
 def short():
     data = request.get_json()  # Obtiene los datos del request
