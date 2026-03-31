@@ -77,3 +77,15 @@ def find_user_links(user_id):
     except Exception as e:
         print(f"Error querying database: {e}")
         return []
+
+
+def delete_user_links(user_id, short_urls: list[str]) -> bool:
+    """Elimina enlaces del usuario solo si coinciden short_url y user_id."""
+    if not short_urls:
+        return True
+    try:
+        _get_client().table(TABLE_URLS).delete().eq("user_id", user_id).in_("short_url", short_urls).execute()
+        return True
+    except Exception as e:
+        print(f"Error deleting user links: {e}")
+        return False
