@@ -18,4 +18,4 @@ limiter = Limiter(
 
 from app.controllers.short import short
 from app.controllers.main import main
-from app.controllers.user import get_user_links
+from app.controllers.user import get_user_links, post_delete_user_links
