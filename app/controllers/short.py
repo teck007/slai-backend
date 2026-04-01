@@ -4,11 +4,11 @@ from app.utils.database import save_url, get_url, find_url  # Funciones para int
 from app.utils.llm_service import resume_url  # Función para acortar URLs usando IA
 from app.utils.url_analize import url_content  # Función para analizar el contenido de una URL
 from flask import request, jsonify, redirect
-from functools import wraps  # Para crear decoradores
-
+from app.utils.auth import optional_auth, g
 # Ruta para acortar una URL
 @app.route('/api/shorten',methods=['POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("10 per minute")
+@optional_auth
 def short():
     data = request.get_json()  # Obtiene los datos del request
     url = data['url']  # Extrae la URL
@@ -19,7 +19,7 @@ def short():
     if not content:
         return jsonify({'status': 'error','result': 'La URL no esta disponible o es inaccesible'}), 400
     short_url = resume_url(url, content)  # Acorta la URL usando el contenido
-    save_url(url, short_url)  # Guarda la nueva URL acortada en la base de datos
+    save_url(url, short_url, g.user_id)  # Guarda la nueva URL acortada en la base de datos
     return jsonify({'status': 'shorted','result': short_url})  # Retorna la nueva URL acortada
 
 # Ruta para redirigir desde una URL acortada a la original

@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=os.getenv("FRONTEND_URL"))
 
 limiter = Limiter(
     get_remote_address,
@@ -18,3 +18,4 @@ limiter = Limiter(
 
 from app.controllers.short import short
 from app.controllers.main import main
+from app.controllers.user import get_user_links, post_delete_user_links
