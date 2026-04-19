@@ -57,7 +57,12 @@ def get_url(short_url):
 
 
 def find_url(url):
-    """Busca la URL corta correspondiente a una URL original."""
+    """Busca la URL corta correspondiente a una URL original.
+    Argumentos:
+        url (str): La URL original a buscar.
+    Retorna:
+        str | None: La URL corta correspondiente a la URL original, o None si no se encuentra.
+    """
     try:
         resp = _get_client().table(TABLE_URLS).select("short_url").eq("orig_url", url).limit(1).execute()
         if resp.data and len(resp.data) > 0:
