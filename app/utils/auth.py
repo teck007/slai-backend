@@ -9,6 +9,15 @@ dotenv.load_dotenv()
 clerk = Clerk(bearer_auth=os.getenv('CLERK_SECRET_KEY'))
 
 
+def _authorized_parties():
+    raw = os.getenv("FRONTEND_URL") or ""
+    parties = [o.strip().rstrip("/") for o in raw.split(",") if o.strip()]
+    if parties:
+        return parties
+    single = raw.strip().rstrip("/")
+    return [single] if single else []
+
+
 def optional_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -21,7 +30,7 @@ def optional_auth(f):
         state = clerk.authenticate_request(
             req,
             AuthenticateRequestOptions(
-                authorized_parties=[os.getenv('FRONTEND_URL')]
+                authorized_parties=_authorized_parties()
             ),
         )
         if not state.is_signed_in:
@@ -46,7 +55,7 @@ def required_auth(f):
         state = clerk.authenticate_request(
             req,
             AuthenticateRequestOptions(
-                authorized_parties=[os.getenv('FRONTEND_URL')]
+                authorized_parties=_authorized_parties()
             ),
         )
         if not state.is_signed_in:

@@ -1,1 +1,1 @@
-web: gunicorn -w 2 --threads 4 -b 0.0.0.0:$PORT app:app
+web: gunicorn --workers=${WEB_CONCURRENCY:-1} --threads=${GUNICORN_THREADS:-2} --max-requests=${GUNICORN_MAX_REQUESTS:-1000} --max-requests-jitter=${GUNICORN_MAX_REQUESTS_JITTER:-100} -b 0.0.0.0:$PORT app:app
