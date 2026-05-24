@@ -4,6 +4,7 @@ from app.utils.database import save_url, get_url, find_url  # Funciones para int
 from app.utils.llm_service import resume_url  # Función para acortar URLs usando IA
 from app.utils.url_analize import url_content  # Función para analizar el contenido de una URL
 from flask import request, jsonify, redirect
+from app.utils.access_log import log_access  # Función para registrar el acceso
 from app.utils.auth import optional_auth, g
 # Ruta para acortar una URL
 @app.route('/api/shorten',methods=['POST'])
@@ -25,6 +26,7 @@ def short():
 # Ruta para redirigir desde una URL acortada a la original
 @app.route('/<short_url>', methods=['GET'])
 def redirect_short(short_url):
+    log_access()  # Registra el acceso
     original_url = get_url(short_url)  # Busca la URL original
     if not original_url:
         return "<h1>URL no encontrada</h1>", 404  # Retorna error si no existe
