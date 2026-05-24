@@ -94,3 +94,10 @@ def delete_user_links(user_id, short_urls: list[str]) -> bool:
     except Exception as e:
         print(f"Error deleting user links: {e}")
         return False
+    
+def save_access_log(data):
+    """Guarda el acceso de un visitante en la base de datos."""
+    try:
+        _get_client().table("access_logs").insert(data).execute()
+    except Exception as e:
+        print(f"Error inserting into access_logs: {e}")
