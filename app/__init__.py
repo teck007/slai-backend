@@ -34,3 +34,4 @@ def _skip_rate_limit_for_cors_preflight():
 from app.controllers.short import short
 from app.controllers.main import main
 from app.controllers.user import get_user_links, post_delete_user_links
+from app.controllers.stats import get_link_stats_endpoint
